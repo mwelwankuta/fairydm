@@ -13,7 +13,7 @@ A simple, Mongoose-like ODM (Object Document Mapper) for Google Firestore, desig
 - **Type-Safe Models**: Full TypeScript support with inferred types from your model interfaces.
 - **Mongoose-like API**: A familiar and intuitive API for developers coming from a Mongoose background.
 - **Promise-based**: All asynchronous operations return Promises for easy integration with modern async/await syntax.
-- **Emulator Support**: Easily connect to the Firestore emulator for local development and testing.
+- **Secure Connection**: Connect to your live Firestore database using service account credentials.
 
 ## Installation
 
@@ -27,15 +27,27 @@ Here's a quick guide to get you started with `fairydm`.
 
 ### 1. Connect to Firestore
 
-First, connect to your Firestore instance. For local development, you can easily connect to the Firestore emulator.
+To connect to your Firestore database, you will need a service account key from your Google Cloud/Firebase project.
+
+**Generating a Service Account Key:**
+
+1.  Go to your project settings in the [Firebase Console](https://console.firebase.google.com/).
+2.  Navigate to the **Service accounts** tab.
+3.  Click on **Generate new private key**. A JSON file containing your service account credentials will be downloaded.
+4.  Save this file securely in your project (e.g., in a `config` directory) and **ensure it is added to your `.gitignore`** to prevent it from being committed to version control.
+
+Now, use the service account key to connect `fairydm` to your Firestore instance.
 
 ```typescript
 import { connect, disconnect } from 'fairydm';
+import admin from 'firebase-admin';
+import serviceAccount from './config/serviceAccountKey.json'; // Adjust path as needed
 
 async function initialize() {
-  // For local development with the emulator
-  process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-  await connect({ projectId: 'your-test-project' });
+  await connect({
+    credential: serviceAccount,
+    projectId: "testing-fairydm"
+  });
   console.log('Connected to Firestore!');
 
   // Your application logic here...
@@ -150,8 +162,8 @@ This repository includes a standalone example of a social media API located in t
 
 To run the example:
 1.  Navigate to the example directory: `cd example`
-2.  Install the dependencies: `npm install`
-3.  Make sure the Firestore emulator is running.
+2.  Create a `serviceAccountKey.json` file inside `example/src/config/`. Follow the instructions in the "Connect to Firestore" section to generate your key.
+3.  Install the dependencies: `npm install`
 4.  Start the application: `npm start`
 
 ## API Reference
