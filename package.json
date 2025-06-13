@@ -1,0 +1,39 @@
+{
+  "name": "fairydm",
+  "version": "0.0.1",
+  "description": "A Mongoose-like ODM for Google Firestore",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/fairydm.git"
+  },
+  "keywords": [
+    "firestore",
+    "odm",
+    "mongoose",
+    "firebase",
+    "database"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/your-username/fairydm/issues"
+  },
+  "homepage": "https://github.com/your-username/fairydm#readme",
+  "dependencies": {
+    "firebase-admin": "^12.1.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.4",
+    "typescript": "^5.4.5"
+  }
+}
