@@ -1,0 +1,178 @@
+# fairydm
+
+A simple, Mongoose-like ODM (Object Document Mapper) for Google Firestore, designed to bring structure and type safety to your Firestore data models in TypeScript projects.
+
+[![npm version](https://badge.fury.io/js/fairydm.svg)](https://badge.fury.io/js/fairydm)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+`fairydm` provides a familiar, Mongoose-inspired API for defining schemas, creating models, and performing CRUD operations, all while leveraging the power of TypeScript for a better developer experience.
+
+## Core Features
+
+- **Schema Definition**: Structure your data with clear and simple schema definitions.
+- **Type-Safe Models**: Full TypeScript support with inferred types from your model interfaces.
+- **Mongoose-like API**: A familiar and intuitive API for developers coming from a Mongoose background.
+- **Promise-based**: All asynchronous operations return Promises for easy integration with modern async/await syntax.
+- **Emulator Support**: Easily connect to the Firestore emulator for local development and testing.
+
+## Installation
+
+```bash
+npm install fairydm firebase-admin
+```
+
+## Quick Start
+
+Here's a quick guide to get you started with `fairydm`.
+
+### 1. Connect to Firestore
+
+First, connect to your Firestore instance. For local development, you can easily connect to the Firestore emulator.
+
+```typescript
+import { connect, disconnect } from 'fairydm';
+
+async function initialize() {
+  // For local development with the emulator
+  process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+  await connect({ projectId: 'your-test-project' });
+  console.log('Connected to Firestore!');
+
+  // Your application logic here...
+
+  // Disconnect when done
+  await disconnect();
+}
+
+initialize();
+```
+
+### 2. Define a Schema and Model
+
+Define an interface for your data and then create a `Schema` and a `Model`.
+
+```typescript
+import { model, Schema } from 'fairydm';
+
+// Define a TypeScript interface for your document
+interface IUser {
+  name: string;
+  email: string;
+  age?: number;
+  role: 'admin' | 'user';
+}
+
+// Create a schema that corresponds to the interface
+const userSchema = new Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  age: { type: Number },
+  role: { type: String, default: 'user' },
+});
+
+// Create the model
+const User = model<IUser>('User', userSchema);
+```
+The `model<T>()` function is generic, and the type `T` you pass to it will be used to provide type safety and autocompletion for all model methods.
+
+### 3. Create Documents
+
+You can create new documents using the `.create()` static method or by instantiating the model and calling `.save()`.
+
+```typescript
+// Using .create()
+const user1 = await User.create({
+  name: 'Alice',
+  email: 'alice@example.com',
+  age: 30,
+});
+console.log('Created user:', user1.data);
+
+
+// Using new and .save()
+const user2 = new User({
+  name: 'Bob',
+  email: 'bob@example.com',
+});
+await user2.save(); // Bob's role will default to 'user'
+console.log('Saved user:', user2.data);
+```
+
+### 4. Find Documents
+
+`fairydm` provides `find` and `findOne` methods with type-safe query objects.
+
+```typescript
+// Find a single document
+const alice = await User.findOne({ email: 'alice@example.com' });
+if (alice) {
+  console.log('Found Alice:', alice.data.name);
+}
+
+// Find multiple documents
+const allUsers = await User.find({ role: 'user' });
+console.log(`Found ${allUsers.length} users.`);
+```
+
+### 5. Update Documents
+
+Update documents using `updateOne` or `updateMany`. You can also update a document instance directly and then call `.save()`.
+
+```typescript
+// Update a single document's age
+await User.updateOne({ email: 'alice@example.com' }, { $set: { age: 31 } });
+
+// Update an instance and save
+if (alice) {
+  alice.data.role = 'admin';
+  await alice.save();
+  console.log('Promoted Alice to admin.');
+}
+```
+
+### 6. Delete Documents
+
+Delete documents using `deleteMany` or `findByIdAndDelete`.
+
+```typescript
+// Delete Bob by his email
+await User.deleteMany({ email: 'bob@example.com' });
+
+// Delete Alice by her ID
+if (alice && alice.id) {
+  await User.findByIdAndDelete(alice.id);
+}
+```
+
+## Standalone Example Application
+
+This repository includes a standalone example of a social media API located in the `/example` directory. It demonstrates how to structure a more complex application with multiple models, routes, and authentication.
+
+To run the example:
+1.  Navigate to the example directory: `cd example`
+2.  Install the dependencies: `npm install`
+3.  Make sure the Firestore emulator is running.
+4.  Start the application: `npm start`
+
+## API Reference
+
+### Model Static Methods
+
+- `model<T>(name, schema)`: Creates a new model.
+- `connect(options)`: Connects to Firestore.
+- `disconnect()`: Disconnects from Firestore.
+- `create(data)`: Creates and saves a new document.
+- `find(query)`: Finds multiple documents matching the query.
+- `findOne(query)`: Finds a single document matching the query.
+- `updateOne(filter, update)`: Updates a single document.
+- `updateMany(filter, update)`: Updates multiple documents.
+- `deleteMany(query)`: Deletes documents matching the query.
+- `findByIdAndDelete(id)`: Deletes a single document by its ID.
+
+### Model Instance Methods
+
+- `save()`: Saves or updates the document instance.
+
+## License
+
+This project is licensed under the MIT License.
