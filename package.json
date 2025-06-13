@@ -29,9 +29,11 @@
     "url": "https://github.com/mwelwankuta/fairydm/issues"
   },
   "homepage": "https://github.com/mwelwankuta/fairydm#readme",
+  "dependencies": {
+    "firebase-admin": "^12.1.1"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "firebase-admin": "^12.1.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.4",
     "tsup": "^8.5.0",
