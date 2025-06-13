@@ -2,7 +2,7 @@
 
 A simple, Mongoose-like ODM (Object Document Mapper) for Google Firestore, designed to bring structure and type safety to your Firestore data models in TypeScript projects.
 
-[![npm version](https://badge.fury.io/js/fairydm.svg)](https://badge.fury.io/js/fairydm)
+[![npm version](https://badge.fury.io/js/fairydm.svg)](https://badge.fury.io/js/fairydm) 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `fairydm` provides a familiar, Mongoose-inspired API for defining schemas, creating models, and performing CRUD operations, all while leveraging the power of TypeScript for a better developer experience.
