@@ -173,6 +173,15 @@ To run the example:
 
 - `save()`: Saves or updates the document instance.
 
+## Future Work & Todos
+
+`fairydm` is an evolving project. Here are some of the features and improvements planned for the future:
+
+-   **Migration System**: Integration with a migration tool or a built-in system to manage schema changes over time.
+-   **Advanced Query Operators**: Support for more complex Firestore queries, such as `array-contains`, `in`, and `array-contains-any`.
+-   **Enhanced Schema Validation**: More built-in validation rules for schema fields.
+-   **Transaction Support**: Helpers for running complex operations within a Firestore transaction.
+
 ## License
 
 This project is licensed under the MIT License.
