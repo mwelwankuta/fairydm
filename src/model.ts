@@ -11,7 +11,6 @@ export type ModelClass<T extends object> = {
   deleteMany(query: object): Promise<{ acknowledged: boolean; deletedCount: number }>;
   updateOne(filter: object, update: object): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }>;
   updateMany(filter: object, update: object): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }>;
-  // Add other static methods here in the future
 } & typeof Model;
 
 export class Model<T extends object> {

@@ -36,6 +36,11 @@ describe('fairydm', () => {
     await disconnect();
   });
 
+  afterEach(async () => {
+    // Clean up the database after each test
+    await User.deleteMany({});
+  });
+
   it('should create and find a user', async () => {
     const userData = {
       name: 'Alice',
@@ -63,7 +68,53 @@ describe('fairydm', () => {
 
     const user = await TestUser.create({ name: 'Bob' });
     expect(user.data.role).toBe('user');
-    await TestUser.deleteMany({}); // Clean up
+    await TestUser.deleteMany({});
+  });
+
+  it('should find multiple users', async () => {
+    await User.create({ name: 'Eve', email: 'eve@example.com', age: 25 });
+    await User.create({ name: 'Frank', email: 'frank@example.com', age: 25 });
+
+    const users = await User.find({ age: 25 });
+    expect(users).toHaveLength(2);
+    expect(users[0].data.age).toBe(25);
+    expect(users[1].data.age).toBe(25);
+  });
+
+  it('should fetch all users', async () => {
+    await User.create({ name: 'User1', email: 'user1@example.com' });
+    await User.create({ name: 'User2', email: 'user2@example.com' });
+    await User.create({ name: 'User3', email: 'user3@example.com' });
+
+    const allUsers = await User.find({});
+    expect(allUsers).toHaveLength(3);
+  });
+
+  it('should save a new document and then update it', async () => {
+    const newUser = new User({ name: 'Grace', email: 'grace@example.com' });
+    await newUser.save();
+    
+    expect(newUser.id).toBeDefined();
+
+    const foundUser = await User.findOne({ email: 'grace@example.com' });
+    expect(foundUser).toBeDefined();
+
+    foundUser!.data.age = 35;
+    await foundUser!.save();
+
+    const updatedUser = await User.findOne({ email: 'grace@example.com' });
+    expect(updatedUser?.data.age).toBe(35);
+  });
+
+  it('should update many documents', async () => {
+    await User.create({ name: 'Heidi', email: 'heidi@example.com', age: 30 });
+    await User.create({ name: 'Ivan', email: 'ivan@example.com', age: 30 });
+
+    const result = await User.updateMany({ age: 30 }, { age: 31 });
+    expect(result.modifiedCount).toBe(2);
+
+    const users = await User.find({ age: 31 });
+    expect(users).toHaveLength(2);
   });
 
   it('should update a document', async () => {
@@ -73,6 +124,17 @@ describe('fairydm', () => {
 
     const updatedUser = await User.findOne({ email: 'charlie@example.com' });
     expect(updatedUser?.data.age).toBe(40);
+  });
+
+  it('should delete a document by ID', async () => {
+    const user = await User.create({ name: 'Judy', email: 'judy@example.com' });
+    expect(user.id).toBeDefined();
+
+    const result = await User.findByIdAndDelete(user.id!);
+    expect(result.deletedCount).toBe(1);
+
+    const foundUser = await User.findOne({ email: 'judy@example.com' });
+    expect(foundUser).toBeNull();
   });
 
   it('should delete a document', async () => {
