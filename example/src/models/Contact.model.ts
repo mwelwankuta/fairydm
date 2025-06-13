@@ -19,4 +19,4 @@ const contactSchemaDefinition = {
 export const contactSchema = new Schema(contactSchemaDefinition);
 
 // 3. Create and export the Contact model
-export const ContactModel = model<Contact>('Contact', contactSchema); 
+export const ContactModel = model<Contact>('Contact', contactSchema);

@@ -21,4 +21,4 @@ const notificationSchemaDefinition = {
 export const notificationSchema = new Schema(notificationSchemaDefinition);
 
 // 3. Create and export the Notification model
-export const NotificationModel = model<Notification>('Notification', notificationSchema); 
+export const NotificationModel = model<Notification>('Notification', notificationSchema);

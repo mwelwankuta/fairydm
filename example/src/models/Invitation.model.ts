@@ -19,4 +19,4 @@ const invitationSchemaDefinition = {
 export const invitationSchema = new Schema(invitationSchemaDefinition);
 
 // 3. Create and export the Invitation model
-export const InvitationModel = model<Invitation>('Invitation', invitationSchema); 
+export const InvitationModel = model<Invitation>('Invitation', invitationSchema);

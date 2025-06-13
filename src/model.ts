@@ -1,16 +1,17 @@
 import { Schema } from './schema';
 import { getFirestore } from './connection';
 import { applyQuery } from './query';
+import { FilterQuery, UpdateQuery } from './types';
 
 export type ModelClass<T extends object> = {
   new (data: T, id?: string): Model<T>; // Constructor signature
-  create(data: T): Promise<Model<T>>;
-  findOne(query: object): Promise<Model<T> | null>;
-  find(query: object): Promise<Model<T>[]>;
+  create(data: Partial<T>): Promise<Model<T>>;
+  findOne(query: FilterQuery<T>): Promise<Model<T> | null>;
+  find(query: FilterQuery<T>): Promise<Model<T>[]>;
   findByIdAndDelete(id: string): Promise<{ acknowledged: boolean; deletedCount: number }>;
-  deleteMany(query: object): Promise<{ acknowledged: boolean; deletedCount: number }>;
-  updateOne(filter: object, update: object): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }>;
-  updateMany(filter: object, update: object): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }>;
+  deleteMany(query: FilterQuery<T>): Promise<{ acknowledged: boolean; deletedCount: number }>;
+  updateOne(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }>;
+  updateMany(filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }>;
 } & typeof Model;
 
 export class Model<T extends object> {
@@ -51,7 +52,7 @@ export class Model<T extends object> {
     return this;
   }
 
-  static async create<T extends object>(this: ModelClass<T>, data: T): Promise<Model<T>> {
+  static async create<T extends object>(this: ModelClass<T>, data: Partial<T>): Promise<Model<T>> {
     const { valid, errors, validatedData } = this.schema.validate(data);
 
     if (!valid) {
@@ -63,7 +64,7 @@ export class Model<T extends object> {
     return modelInstance;
   }
 
-  static async findOne<T extends object>(this: ModelClass<T>, query: object): Promise<Model<T> | null> {
+  static async findOne<T extends object>(this: ModelClass<T>, query: FilterQuery<T>): Promise<Model<T> | null> {
     const firestoreQuery = applyQuery(this, query);
     const snapshot = await firestoreQuery.limit(1).get();
 
@@ -77,7 +78,7 @@ export class Model<T extends object> {
     return new this(data, doc.id);
   }
 
-  static async find<T extends object>(this: ModelClass<T>, query: object): Promise<Model<T>[]> {
+  static async find<T extends object>(this: ModelClass<T>, query: FilterQuery<T>): Promise<Model<T>[]> {
     const firestoreQuery = applyQuery(this, query);
     const snapshot = await firestoreQuery.get();
 
@@ -94,7 +95,7 @@ export class Model<T extends object> {
     }
   }
 
-  static async deleteMany<T extends object>(this: ModelClass<T>, query: object): Promise<{ acknowledged: boolean; deletedCount: number }> {
+  static async deleteMany<T extends object>(this: ModelClass<T>, query: FilterQuery<T>): Promise<{ acknowledged: boolean; deletedCount: number }> {
     const firestoreQuery = applyQuery(this, query);
     const snapshot = await firestoreQuery.get();
 
@@ -116,7 +117,7 @@ export class Model<T extends object> {
     }
   }
 
-  static async updateOne<T extends object>(this: ModelClass<T>, filter: object, update: object): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }> {
+  static async updateOne<T extends object>(this: ModelClass<T>, filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }> {
     const firestoreQuery = applyQuery(this, filter).limit(1);
     const snapshot = await firestoreQuery.get();
 
@@ -126,7 +127,7 @@ export class Model<T extends object> {
 
     const doc = snapshot.docs[0];
     try {
-      await doc.ref.update(update);
+      await doc.ref.update(update as any);
       return { acknowledged: true, modifiedCount: 1, matchedCount: 1 };
     } catch (error) {
       console.error('Error updating document:', error);
@@ -134,7 +135,7 @@ export class Model<T extends object> {
     }
   }
 
-  static async updateMany<T extends object>(this: ModelClass<T>, filter: object, update: object): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }> {
+  static async updateMany<T extends object>(this: ModelClass<T>, filter: FilterQuery<T>, update: UpdateQuery<T> | Partial<T>): Promise<{ acknowledged: boolean; modifiedCount: number; matchedCount: number }> {
     const firestoreQuery = applyQuery(this, filter);
     const snapshot = await firestoreQuery.get();
 
@@ -144,7 +145,7 @@ export class Model<T extends object> {
 
     const batch = this.db.batch();
     snapshot.docs.forEach(doc => {
-      batch.update(doc.ref, update);
+      batch.update(doc.ref, update as any);
     });
 
     try {

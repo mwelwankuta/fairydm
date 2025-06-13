@@ -9,8 +9,10 @@ router.use(authMiddleware);
 
 // GET /api/users/me - Get the authenticated user's profile
 router.get('/me', async (req: Request, res: Response) => {
+  const userId = (req as Request & { userId: string }).userId;
+
   try {
-    const user = await UserModel.findOne({ _id: req.userId });
+    const user = await UserModel.findOne({ _id: userId });
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
@@ -37,4 +39,4 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
   });
 
-export const userRoutes = router; 
+export const userRoutes = router;

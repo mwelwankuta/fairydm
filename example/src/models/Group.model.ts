@@ -21,4 +21,4 @@ const groupSchemaDefinition = {
 export const groupSchema = new Schema(groupSchemaDefinition);
 
 // 3. Create and export the Group model
-export const GroupModel = model<Group>('Group', groupSchema); 
+export const GroupModel = model<Group>('Group', groupSchema);

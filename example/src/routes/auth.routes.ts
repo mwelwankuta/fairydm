@@ -1,8 +1,3 @@
-/*
- * This file requires `jsonwebtoken` and `bcryptjs`.
- * npm install jsonwebtoken bcryptjs
- * npm install --save-dev @types/jsonwebtoken @types/bcryptjs
- */
 import { Router, Request, Response } from 'express';
 import { UserModel } from '../models/User.model';
 import jwt from 'jsonwebtoken';
@@ -14,10 +9,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phoneNumber } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email, and password are required.' });
+    if (!name || !email || !password || !phoneNumber) {
+      return res.status(400).json({ message: 'Name, email, password, and phoneNumber are required.' });
     }
 
     const existingUser = await UserModel.findOne({ email });
@@ -29,10 +24,15 @@ router.post('/register', async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await UserModel.create({ name, email, password: hashedPassword });
+    const user = await UserModel.create({
+      firstName: name,
+      email,
+      password: hashedPassword,
+      phoneNumber: phoneNumber,
+    });
 
     // Don't send password back
-    const userResponse = { id: user.id, name: user.data.name, email: user.data.email };
+    const userResponse = { id: user.id, firstName: user.data.firstName, lastName: user.data.lastName, email: user.data.email, phoneNumber: user.data.phoneNumber };
 
     res.status(201).json({ message: 'User registered successfully', user: userResponse });
   } catch (error) {

@@ -11,7 +11,7 @@ router.use(authMiddleware);
 // POST /api/invitations/send - Send a contact request
 router.post('/send', async (req: Request, res: Response) => {
   try {
-    const senderId = req.userId!;
+    const senderId = (req as Request & { userId: string }).userId;
     const { receiverId } = req.body;
 
     if (senderId === receiverId) {
@@ -47,9 +47,9 @@ router.post('/send', async (req: Request, res: Response) => {
 router.post('/:id/accept', async (req: Request, res: Response) => {
     try {
       const invitationId = req.params.id;
-      const receiverId = req.userId!;
+      const receiverId = (req as Request & { userId: string }).userId;
   
-      const invitation = await InvitationModel.findOne({ _id: invitationId, receiverId, status: 'pending' });
+      const invitation = await InvitationModel.findOne({ id: invitationId, receiverId, status: 'pending' });
   
       if (!invitation) {
         return res.status(404).json({ message: 'Invitation not found or you are not authorized to accept it.' });
@@ -80,7 +80,7 @@ router.post('/:id/accept', async (req: Request, res: Response) => {
   router.post('/:id/decline', async (req: Request, res: Response) => {
     try {
         const invitationId = req.params.id;
-        const receiverId = req.userId!;
+        const receiverId = (req as Request & { userId: string }).userId;
     
         const invitation = await InvitationModel.findOne({ _id: invitationId, receiverId, status: 'pending' });
     
