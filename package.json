@@ -1,18 +1,21 @@
 {
   "name": "fairydm",
   "version": "0.0.1",
-  "description": "A simple ODM for Firestore inspired by Mongoose.",
+  "description": "A TypeScript ODM for Firebase Firestore built with Node.js ",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "test": "jest",
-    "prepare": "npm run build",
-    "example": "ts-node example/express-app.ts"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mwelw/fairydm.git"
+    "url": "git+https://github.com/mwelwankuta/fairydm.git"
   },
   "keywords": [
     "firestore",
@@ -20,17 +23,18 @@
     "mongoose",
     "firebase"
   ],
-  "author": "Mohammed El-Wardany",
+  "author": "Mwelwa Nkuta (github.com/mwelwankuta)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mwelw/fairydm/issues"
+    "url": "https://github.com/mwelwankuta/fairydm/issues"
   },
-  "homepage": "https://github.com/mwelw/fairydm#readme",
+  "homepage": "https://github.com/mwelwankuta/fairydm#readme",
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "firebase-admin": "^12.1.1",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.4",
+    "tsup": "^8.5.0",
     "typescript": "^5.4.5"
   }
 }
