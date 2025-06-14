@@ -9,18 +9,58 @@ import { model, Schema, connect, disconnect } from "../src";
  * The test suite will automatically connect to the emulator if it's running on localhost:8080.
  */
 
+interface Salary {
+  frequency: "hourly" | "daily" | "weekly" | "monthly" | "yearly";
+  amount: {
+    currency: "USD" | "ZMW";
+    amount: number;
+  };
+}
+
 interface User {
   name: string;
   email: string;
   age?: number;
   sex?: "male" | "female";
+  salary?: Salary;
+  ids: { name: string; id: string }[];
 }
+
+const amountSchema = new Schema({
+  currency: { type: String, required: true },
+  amount: { type: Number, required: true },
+});
+
+const salarySchema = new Schema({
+  frequency: {
+    type: String,
+    required: true,
+  },
+  amount: { type: amountSchema, required: true },
+});
+
+const idSchema = new Schema({
+  name: String,
+  id: String,
+});
 
 const userSchema = new Schema<User>({
   name: { type: String, required: true },
   email: { type: String, required: true },
   sex: { type: String, default: "male" },
   age: { type: Number, default: 18, required: false },
+  ids: { type: [idSchema], required: true },
+  salary: {
+    type: salarySchema,
+    default: {
+      frequency: "monthly",
+      amount: {
+        amount: 0,
+        currency: "USD",
+      },
+    },
+    required: false,
+  },
 });
 
 const User = model<User>("User", userSchema);
@@ -48,6 +88,7 @@ describe("fairydm", () => {
       name: "Alice",
       email: "alice@example.com",
       age: 30,
+      ids: [{ name: "test", id: "123" }],
     };
 
     const user = await User.create(userData);

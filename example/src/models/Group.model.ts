@@ -1,4 +1,4 @@
-import { model, Schema } from 'fairydm';
+import { model, Schema } from "fairydm";
 
 // 1. Define the Group Interface
 export interface Group {
@@ -6,19 +6,17 @@ export interface Group {
   description?: string;
   members: string[]; // Array of User IDs
   createdBy: string; // User ID of the creator
-  createdAt: Date;
+  createdAt: string;
 }
 
 // 2. Define the Group Schema
-const groupSchemaDefinition = {
+export const groupSchema = new Schema<Group>({
   name: { type: String, required: true },
   description: { type: String },
-  members: { type: Array, required: true },
+  members: { type: Array, required: true, of: String },
   createdBy: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-};
-
-export const groupSchema = new Schema(groupSchemaDefinition);
+  createdAt: { type: String, default: new Date().toISOString() },
+});
 
 // 3. Create and export the Group model
-export const GroupModel = model<Group>('Group', groupSchema);
+export const GroupModel = model<Group>("Group", groupSchema);
