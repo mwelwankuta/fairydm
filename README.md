@@ -226,12 +226,6 @@ The CLI will guide you through the setup process, asking which emulators you wan
 To start the emulators, run the following command from your project root:
 
 ```bash
-firebase emulators:start
-```
-
-You can also choose to run specific emulators:
-
-```bash
 # Start only the Firestore
 firebase emulators:start --only firestore
 ```
