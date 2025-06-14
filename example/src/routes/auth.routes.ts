@@ -9,9 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key';
 // POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { name, email, password, phoneNumber } = req.body;
+    const { firstName, lastName, email, password, phoneNumber } = req.body;
 
-    if (!name || !email || !password || !phoneNumber) {
+    if (!firstName || !lastName || !email || !password || !phoneNumber) {
       return res.status(400).json({ message: 'Name, email, password, and phoneNumber are required.' });
     }
 
@@ -25,10 +25,21 @@ router.post('/register', async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await UserModel.create({
-      firstName: name,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
-      phoneNumber: phoneNumber,
+      phoneNumber,
+      address: {
+        street: "123 Main St",
+        city: "Anytown",
+        state: "CA",
+        zip: "12345",
+        country: {
+          name: "United States",
+          code: "US"
+        }
+      }
     });
 
     // Don't send password back

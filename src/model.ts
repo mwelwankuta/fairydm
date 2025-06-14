@@ -42,8 +42,13 @@ export class Model<T extends object> {
     const constructor = this.constructor as typeof Model;
     const collection = constructor.db.collection(constructor.collectionName);
 
+    // This is a deep-copy and strips any class instances, ensuring plain objects.
+    const dataToSave = JSON.parse(JSON.stringify(this.data));
+    
     // Exclude our client-side _id from the data being saved to Firestore.
-    const { _id, ...dataToSave } = this.data;
+    if (dataToSave._id) {
+      delete dataToSave._id;
+    }
 
     // If the document has an ID, it exists, so we update it.
     // Otherwise, we create a new one.
