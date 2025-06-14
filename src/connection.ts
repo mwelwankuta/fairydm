@@ -3,15 +3,28 @@ import * as admin from "firebase-admin";
 let firestore: admin.firestore.Firestore;
 
 export const connect = async (options: {
-  credential: string;
+  credential?: string;
   projectId: string;
 }) => {
-  if (admin.apps.length === 0) {
+  if (admin.apps.length > 0) {
+    return;
+  }
+
+  if (process.env.FIRESTORE_EMULATOR_HOST) {
+    admin.initializeApp({
+      projectId: options.projectId,
+    });
+    console.log('Connecting to Firestore emulator...');
+  } else {
+    if (!options.credential) {
+      throw new Error('Credential path must be provided for production connections.');
+    }
     admin.initializeApp({
       credential: admin.credential.cert(options.credential),
       projectId: options.projectId,
     });
   }
+
   firestore = admin.firestore();
   console.log("Connected to Firestore.");
 };
