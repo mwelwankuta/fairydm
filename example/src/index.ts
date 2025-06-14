@@ -3,7 +3,6 @@ import { connect, disconnect } from "fairydm";
 import { authRoutes } from "./routes/auth.routes";
 import { invitationRoutes } from "./routes/invitation.routes";
 import { userRoutes } from "./routes/user.routes";
-import { UserModel } from "./models/User.model";
 
 var serviceAccount = require("./config/serviceAccountKey.json");
 
