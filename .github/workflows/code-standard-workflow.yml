@@ -29,5 +29,5 @@ jobs:
       - name: Build (if applicable)
         run: npm run build --if-present
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with Firebase Emulator
+        run: npx firebase-tools emulators:exec "npm test"

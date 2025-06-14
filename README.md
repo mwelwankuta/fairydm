@@ -2,7 +2,7 @@
 
 A simple, Mongoose-like ODM (Object Document Mapper) for Google Firestore, designed to bring structure and type safety to your Firestore data models in TypeScript projects.
 
-[![npm version](https://badge.fury.io/js/fairydm.svg)](https://badge.fury.io/js/fairydm) 
+[![npm version](https://badge.fury.io/js/fairydm.svg)](https://badge.fury.io/js/fairydm)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `fairydm` provides a familiar, Mongoose-inspired API for defining schemas, creating models, and performing CRUD operations, all while leveraging the power of TypeScript for a better developer experience.
@@ -39,24 +39,24 @@ To connect to your Firestore database, you will need a service account key from 
 Now, use the service account key to connect `fairydm` to your Firestore instance.
 
 ```typescript
-import { connect, disconnect } from 'fairydm';
-import admin from 'firebase-admin';
-import serviceAccount from './config/serviceAccountKey.json'; // Adjust path as needed
+import { connect, disconnect } from 'fairydm'
+import admin from 'firebase-admin'
+import serviceAccount from './config/serviceAccountKey.json' // Adjust path as needed
 
 async function initialize() {
   await connect({
     credential: serviceAccount,
-    projectId: "testing-fairydm"
-  });
-  console.log('Connected to Firestore!');
+    projectId: 'testing-fairydm',
+  })
+  console.log('Connected to Firestore!')
 
   // Your application logic here...
 
   // Disconnect when done
-  await disconnect();
+  await disconnect()
 }
 
-initialize();
+initialize()
 ```
 
 ### 2. Define a Schema and Model
@@ -64,14 +64,14 @@ initialize();
 Define an interface for your data and then create a `Schema` and a `Model`.
 
 ```typescript
-import { model, Schema } from 'fairydm';
+import { model, Schema } from 'fairydm'
 
 // Define a TypeScript interface for your document
 interface IUser {
-  name: string;
-  email: string;
-  age?: number;
-  role: 'admin' | 'user';
+  name: string
+  email: string
+  age?: number
+  role: 'admin' | 'user'
 }
 
 // Create a schema that corresponds to the interface
@@ -80,11 +80,12 @@ const userSchema = new Schema({
   email: { type: String, required: true },
   age: { type: Number },
   role: { type: String, default: 'user' },
-});
+})
 
 // Create the model
-const User = model<IUser>('User', userSchema);
+const User = model<IUser>('User', userSchema)
 ```
+
 The `model<T>()` function is generic, and the type `T` you pass to it will be used to provide type safety and autocompletion for all model methods.
 
 ### 3. Create Documents
@@ -97,17 +98,16 @@ const user1 = await User.create({
   name: 'Alice',
   email: 'alice@example.com',
   age: 30,
-});
-console.log('Created user:', user1.data);
-
+})
+console.log('Created user:', user1.data)
 
 // Using new and .save()
 const user2 = new User({
   name: 'Bob',
   email: 'bob@example.com',
-});
-await user2.save(); // Bob's role will default to 'user'
-console.log('Saved user:', user2.data);
+})
+await user2.save() // Bob's role will default to 'user'
+console.log('Saved user:', user2.data)
 ```
 
 ### 4. Find Documents
@@ -116,14 +116,14 @@ console.log('Saved user:', user2.data);
 
 ```typescript
 // Find a single document
-const alice = await User.findOne({ email: 'alice@example.com' });
+const alice = await User.findOne({ email: 'alice@example.com' })
 if (alice) {
-  console.log('Found Alice:', alice.data.name);
+  console.log('Found Alice:', alice.data.name)
 }
 
 // Find multiple documents
-const allUsers = await User.find({ role: 'user' });
-console.log(`Found ${allUsers.length} users.`);
+const allUsers = await User.find({ role: 'user' })
+console.log(`Found ${allUsers.length} users.`)
 ```
 
 ### 5. Update Documents
@@ -132,13 +132,13 @@ Update documents using `updateOne` or `updateMany`. You can also update a docume
 
 ```typescript
 // Update a single document's age
-await User.updateOne({ email: 'alice@example.com' }, { $set: { age: 31 } });
+await User.updateOne({ email: 'alice@example.com' }, { $set: { age: 31 } })
 
 // Update an instance and save
 if (alice) {
-  alice.data.role = 'admin';
-  await alice.save();
-  console.log('Promoted Alice to admin.');
+  alice.data.role = 'admin'
+  await alice.save()
+  console.log('Promoted Alice to admin.')
 }
 ```
 
@@ -148,11 +148,11 @@ Delete documents using `deleteMany` or `findByIdAndDelete`.
 
 ```typescript
 // Delete Bob by his email
-await User.deleteMany({ email: 'bob@example.com' });
+await User.deleteMany({ email: 'bob@example.com' })
 
 // Delete Alice by her ID
 if (alice && alice.id) {
-  await User.findByIdAndDelete(alice.id);
+  await User.findByIdAndDelete(alice.id)
 }
 ```
 
@@ -161,6 +161,7 @@ if (alice && alice.id) {
 This repository includes a standalone example of a social media API located in the `/example` directory. It demonstrates how to structure a more complex application with multiple models, routes, and authentication.
 
 To run the example:
+
 1.  Navigate to the example directory: `cd example`
 2.  Create a `serviceAccountKey.json` file inside `example/src/config/`. Follow the instructions in the "Connect to Firestore" section to generate your key.
 3.  Install the dependencies: `npm install`
@@ -189,11 +190,58 @@ To run the example:
 
 `fairydm` is an evolving project. Here are some of the features and improvements planned for the future:
 
--   **Migration System**: Integration with a migration tool or a built-in system to manage schema changes over time.
--   **Advanced Query Operators**: Support for more complex Firestore queries, such as `array-contains`, `in`, and `array-contains-any`.
--   **Enhanced Schema Validation**: More built-in validation rules for schema fields.
--   **Transaction Support**: Helpers for running complex operations within a Firestore transaction.
+- **Migration System**: Integration with a migration tool or a built-in system to manage schema changes over time.
+- **Advanced Query Operators**: Support for more complex Firestore queries, such as `array-contains`, `in`, and `array-contains-any`.
+- **Enhanced Schema Validation**: More built-in validation rules for schema fields.
+- **Transaction Support**: Helpers for running complex operations within a Firestore transaction.
 
 ## License
 
 This project is licensed under the MIT License.
+
+## Firebase Emulator Suite Setup
+
+The Firebase Emulator Suite allows you to run a local version of Firebase services, which is ideal for development and testing without incurring costs or affecting production data.
+
+### 1. Installation
+
+If you haven't already, install the Firebase CLI globally:
+
+```bash
+npm install -g firebase-tools
+```
+
+### 2. Initialization
+
+From your project root, initialize the emulators you want to use (e.g., Firestore, Auth):
+
+```bash
+firebase init emulators
+```
+
+The CLI will guide you through the setup process, asking which emulators you want to install and on which ports they should run. This will create a `firebase.json` file in your project.
+
+### 3. Starting the Emulators
+
+To start the emulators, run the following command from your project root:
+
+```bash
+firebase emulators:start
+```
+
+You can also choose to run specific emulators:
+
+```bash
+# Start only the Firestore
+firebase emulators:start --only firestore
+```
+
+### 4. Running Tests
+
+The emulators are great for running automated tests. You can use the `emulators:exec` command to run a test script against the emulators. The emulators will start, run your script, and then shut down automatically.
+
+```bash
+firebase emulators:exec "npm test"
+```
+
+When using `fairydm` with the Firestore emulator, you don't need to provide service account credentials. `fairydm` will automatically detect that you're connecting to an emulator if you set the `FIRESTORE_EMULATOR_HOST` environment variable, which the `emulators:start` and `emulators:exec` commands do for you.
