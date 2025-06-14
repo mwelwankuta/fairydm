@@ -24,10 +24,10 @@ jobs:
         run: npm ci
 
       - name: Run Prettier
-        run: npx prettier --check .
+        run: npm run format .
 
       - name: Build (if applicable)
-        run: npm run build --if-present
+        run: npm run prepare --if-present
 
       - name: Run tests
         run: npm test
