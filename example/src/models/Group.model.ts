@@ -13,7 +13,7 @@ export interface Group {
 export const groupSchema = new Schema<Group>({
   name: { type: String, required: true },
   description: { type: String },
-  members: { type: Array, required: true, of: String },
+  members: { type: [String], required: true },
   createdBy: { type: String, required: true },
   createdAt: { type: String, default: new Date().toISOString() },
 });
