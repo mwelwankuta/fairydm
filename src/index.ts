@@ -4,7 +4,7 @@ import { Schema } from './schema';
 
 const models: { [name: string]: ModelClass<any> } = {};
 
-const model = <T extends object>(name: string, schema: Schema): ModelClass<T> => {
+const model = <T extends object>(name: string, schema: Schema<T>): ModelClass<T> => {
   if (models[name]) {
     return models[name];
   }

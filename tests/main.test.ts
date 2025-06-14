@@ -1,4 +1,4 @@
-import { model, Schema, connect, disconnect } from '../src';
+import { model, Schema, connect, disconnect } from "../src";
 
 /*
  * To run these tests, you need to have the Firestore emulator running.
@@ -13,21 +13,23 @@ interface User {
   name: string;
   email: string;
   age?: number;
+  sex?: "male" | "female";
 }
 
-const userSchema = new Schema({
+const userSchema = new Schema<User>({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  age: { type: Number },
+  sex: { type: String, default: "male" },
+  age: { type: Number, default: 18, required: false },
 });
 
-const User = model<User>('User', userSchema);
+const User = model<User>("User", userSchema);
 
-describe('fairydm', () => {
+describe("fairydm", () => {
   beforeAll(async () => {
     // Point to the emulator
-    process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-    await connect({ projectId: 'test-project' });
+    process.env.FIRESTORE_EMULATOR_HOST = "localhost:8080";
+    await connect({ projectId: "test-project", credential: "test-credential" });
   });
 
   afterAll(async () => {
@@ -41,39 +43,42 @@ describe('fairydm', () => {
     await User.deleteMany({});
   });
 
-  it('should create and find a user', async () => {
+  it("should create and find a user", async () => {
     const userData = {
-      name: 'Alice',
-      email: 'alice@example.com',
+      name: "Alice",
+      email: "alice@example.com",
       age: 30,
     };
 
     const user = await User.create(userData);
     expect(user).toBeDefined();
     expect(user.id).toBeDefined();
-    expect(user.data.name).toBe('Alice');
+    expect(user.data.name).toBe("Alice");
 
-    const foundUser = await User.findOne({ email: 'alice@example.com' });
+    const foundUser = await User.findOne({ email: "alice@example.com" });
     expect(foundUser).toBeDefined();
-    expect(foundUser?.data.name).toBe('Alice');
+    expect(foundUser?.data.name).toBe("Alice");
     expect(foundUser?.data.age).toBe(30);
   });
 
-  it('should apply default values', async () => {
-    const schemaWithDefault = new Schema({
+  it("should apply default values", async () => {
+    const schemaWithDefault = new Schema<{ name: string; role?: string }>({
       name: { type: String, required: true },
-      role: { type: String, default: 'user' },
+      role: { type: String, default: "user" },
     });
-    const TestUser = model<{ name: string; role?: string }>('TestUser', schemaWithDefault);
+    const TestUser = model<{ name: string; role?: string }>(
+      "TestUser",
+      schemaWithDefault
+    );
 
-    const user = await TestUser.create({ name: 'Bob' });
-    expect(user.data.role).toBe('user');
+    const user = await TestUser.create({ name: "Bob" });
+    expect(user.data.role).toBe("user");
     await TestUser.deleteMany({});
   });
 
-  it('should find multiple users', async () => {
-    await User.create({ name: 'Eve', email: 'eve@example.com', age: 25 });
-    await User.create({ name: 'Frank', email: 'frank@example.com', age: 25 });
+  it("should find multiple users", async () => {
+    await User.create({ name: "Eve", email: "eve@example.com", age: 25 });
+    await User.create({ name: "Frank", email: "frank@example.com", age: 25 });
 
     const users = await User.find({ age: 25 });
     expect(users).toHaveLength(2);
@@ -81,34 +86,34 @@ describe('fairydm', () => {
     expect(users[1].data.age).toBe(25);
   });
 
-  it('should fetch all users', async () => {
-    await User.create({ name: 'User1', email: 'user1@example.com' });
-    await User.create({ name: 'User2', email: 'user2@example.com' });
-    await User.create({ name: 'User3', email: 'user3@example.com' });
+  it("should fetch all users", async () => {
+    await User.create({ name: "User1", email: "user1@example.com" });
+    await User.create({ name: "User2", email: "user2@example.com" });
+    await User.create({ name: "User3", email: "user3@example.com" });
 
     const allUsers = await User.find({});
     expect(allUsers).toHaveLength(3);
   });
 
-  it('should save a new document and then update it', async () => {
-    const newUser = new User({ name: 'Grace', email: 'grace@example.com' });
+  it("should save a new document and then update it", async () => {
+    const newUser = new User({ name: "Grace", email: "grace@example.com" });
     await newUser.save();
-    
+
     expect(newUser.id).toBeDefined();
 
-    const foundUser = await User.findOne({ email: 'grace@example.com' });
+    const foundUser = await User.findOne({ email: "grace@example.com" });
     expect(foundUser).toBeDefined();
 
     foundUser!.data.age = 35;
     await foundUser!.save();
 
-    const updatedUser = await User.findOne({ email: 'grace@example.com' });
+    const updatedUser = await User.findOne({ email: "grace@example.com" });
     expect(updatedUser?.data.age).toBe(35);
   });
 
-  it('should update many documents', async () => {
-    await User.create({ name: 'Heidi', email: 'heidi@example.com', age: 30 });
-    await User.create({ name: 'Ivan', email: 'ivan@example.com', age: 30 });
+  it("should update many documents", async () => {
+    await User.create({ name: "Heidi", email: "heidi@example.com", age: 30 });
+    await User.create({ name: "Ivan", email: "ivan@example.com", age: 30 });
 
     const result = await User.updateMany({ age: 30 }, { age: 31 });
     expect(result.modifiedCount).toBe(2);
@@ -117,33 +122,36 @@ describe('fairydm', () => {
     expect(users).toHaveLength(2);
   });
 
-  it('should update a document', async () => {
-    const user = await User.create({ name: 'Charlie', email: 'charlie@example.com' });
-    
-    await User.updateOne({ email: 'charlie@example.com' }, { age: 40 });
+  it("should update a document", async () => {
+    const user = await User.create({
+      name: "Charlie",
+      email: "charlie@example.com",
+    });
 
-    const updatedUser = await User.findOne({ email: 'charlie@example.com' });
+    await User.updateOne({ email: "charlie@example.com" }, { age: 40 });
+
+    const updatedUser = await User.findOne({ email: "charlie@example.com" });
     expect(updatedUser?.data.age).toBe(40);
   });
 
-  it('should delete a document by ID', async () => {
-    const user = await User.create({ name: 'Judy', email: 'judy@example.com' });
+  it("should delete a document by ID", async () => {
+    const user = await User.create({ name: "Judy", email: "judy@example.com" });
     expect(user.id).toBeDefined();
 
     const result = await User.findByIdAndDelete(user.id!);
     expect(result.deletedCount).toBe(1);
 
-    const foundUser = await User.findOne({ email: 'judy@example.com' });
+    const foundUser = await User.findOne({ email: "judy@example.com" });
     expect(foundUser).toBeNull();
   });
 
-  it('should delete a document', async () => {
-    await User.create({ name: 'David', email: 'david@example.com' });
+  it("should delete a document", async () => {
+    await User.create({ name: "David", email: "david@example.com" });
 
-    const result = await User.deleteMany({ email: 'david@example.com' });
+    const result = await User.deleteMany({ email: "david@example.com" });
     expect(result.deletedCount).toBe(1);
 
-    const foundUser = await User.findOne({ email: 'david@example.com' });
+    const foundUser = await User.findOne({ email: "david@example.com" });
     expect(foundUser).toBeNull();
   });
-}); 
+});

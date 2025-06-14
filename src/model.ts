@@ -17,7 +17,7 @@ export type ModelClass<T extends object> = {
 export class Model<T extends object> {
   // These are set on the dynamically created class that extends this one
   static collectionName: string;
-  static schema: Schema;
+  static schema: Schema<any>;
   private static _db: FirebaseFirestore.Firestore;
 
   static get db(): FirebaseFirestore.Firestore {
@@ -27,13 +27,14 @@ export class Model<T extends object> {
     return this._db;
   }
 
-  public data: T;
+  public data: T & { _id?: string };
   public id?: string;
 
   constructor(data: T, id?: string) {
-    this.data = data;
+    this.data = { ...data };
     if (id) {
       this.id = id;
+      this.data._id = id;
     }
   }
 
@@ -41,13 +42,17 @@ export class Model<T extends object> {
     const constructor = this.constructor as typeof Model;
     const collection = constructor.db.collection(constructor.collectionName);
 
+    // Exclude our client-side _id from the data being saved to Firestore.
+    const { _id, ...dataToSave } = this.data;
+
     // If the document has an ID, it exists, so we update it.
     // Otherwise, we create a new one.
     if (this.id) {
-      await collection.doc(this.id).set(this.data);
+      await collection.doc(this.id).set(dataToSave);
     } else {
-      const docRef = await collection.add(this.data);
+      const docRef = await collection.add(dataToSave);
       this.id = docRef.id;
+      this.data._id = docRef.id; // Add the auto-generated ID to the data object.
     }
     return this;
   }

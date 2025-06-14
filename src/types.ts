@@ -1,5 +1,5 @@
 // A partial representation of the document for querying.
-export type FilterQuery<T> = {
+export type FilterQuery<T> = Partial<T & { _id: string }> & {
   [P in keyof T]?: T[P] | { [key: string]: any };
 };
 

@@ -49,7 +49,7 @@ router.post('/:id/accept', async (req: Request, res: Response) => {
       const invitationId = req.params.id;
       const receiverId = (req as Request & { userId: string }).userId;
   
-      const invitation = await InvitationModel.findOne({ id: invitationId, receiverId, status: 'pending' });
+      const invitation = await InvitationModel.findOne({ _id: invitationId, receiverId, status: 'pending' });
   
       if (!invitation) {
         return res.status(404).json({ message: 'Invitation not found or you are not authorized to accept it.' });
