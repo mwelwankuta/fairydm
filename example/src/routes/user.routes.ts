@@ -42,5 +42,4 @@ router.get("/:id", async (req: Request, res: Response) => {
       .json({ message: "Server error fetching user profile.", error });
   }
 });
-
 export const userRoutes = router;

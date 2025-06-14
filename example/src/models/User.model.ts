@@ -26,7 +26,7 @@ export interface User {
   lastName: string;
   phoneNumber: string;
   email: string;
-  password: string;
+  password?: string;
   address: Address;
 }
 

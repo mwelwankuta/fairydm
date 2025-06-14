@@ -14,6 +14,18 @@ const OPERATOR_MAP: { [key: string]: FirebaseFirestore.WhereFilterOp } = {
   $array_contains_any: 'array-contains-any',
 };
 
+/**
+ * Apply a query to a Firestore collection
+ * @param modelClass - The model class to apply the query to
+ * @param query - The query to apply
+ * @returns A Firestore query
+ * @example
+ * const users = await UserModel.find({
+ *   email: {
+ *     $in: ["123", "456"],
+ *   },
+ * });
+ */
 export function applyQuery<T extends object>(
   modelClass: ModelClass<T>,
   query: any
